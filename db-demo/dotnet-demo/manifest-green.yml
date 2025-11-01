@@ -16,4 +16,4 @@ applications:
     health-check-http-endpoint: /health
     timeout: 180
     routes:
-      - route: msda-dotnet-db-demo-green.cfapps.io
+      - route: msda-dotnet-db-demo-green.apps.dhaka.cf-app.com

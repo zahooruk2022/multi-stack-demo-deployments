@@ -11,7 +11,7 @@ The project includes two demo applications:
 
 ### 1. Spring Boot (Java)
 - **Framework**: Spring Boot 3.5.7
-- **Language**: Java 25
+- **Language**: Java 21
 - **Build Tool**: Maven
 - **Port**: 8080
 

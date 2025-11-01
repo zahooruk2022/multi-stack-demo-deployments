@@ -22,7 +22,7 @@ Basic stateless applications showcasing fundamental cloud-native patterns.
 
 #### 1. Spring Boot Demo (`simple-demo/spring-boot-demo`)
 - **Framework**: Spring Boot 3.5.7
-- **Language**: Java 25
+- **Language**: Java 21
 - **Port**: 8080 (configurable via PORT env var)
 
 #### 2. .NET Core Demo (`simple-demo/dotnet-demo`)
@@ -42,7 +42,7 @@ Applications with PostgreSQL database integration demonstrating cloud-native dat
 
 #### 1. Spring Boot DB Demo (`db-demo/spring-boot-demo`)
 - **Framework**: Spring Boot 3.5.7 + Spring Data JPA
-- **Language**: Java 25
+- **Language**: Java 21
 - **Database**: PostgreSQL 17
 - **Port**: 8080 (configurable via PORT env var)
 

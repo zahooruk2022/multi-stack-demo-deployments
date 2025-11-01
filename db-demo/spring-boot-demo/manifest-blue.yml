@@ -7,7 +7,7 @@ applications:
       - java_buildpack_offline
     path: target/spring-boot-db-demo-1.0.0.jar
     env:
-      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 25.+ } }'
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 21.+ } }'
       APP_VERSION: "1.0.0"
       APP_DEPLOYMENT_COLOR: "blue"
     services:
@@ -16,4 +16,4 @@ applications:
     health-check-http-endpoint: /actuator/health
     timeout: 180
     routes:
-      - route: msda-spring-boot-db-demo-blue.cfapps.io
+      - route: msda-spring-boot-db-demo-blue.apps.dhaka.cf-app.com

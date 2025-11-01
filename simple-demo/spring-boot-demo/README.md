@@ -1,6 +1,6 @@
 # Spring Boot Demo Application
 
-A cloud-native demo application built with Spring Boot 3.5.6 and Java 25.
+A cloud-native demo application built with Spring Boot 3.5.6 and Java 21.
 
 ## Features
 - Web interface showing tech stack information
@@ -12,7 +12,7 @@ A cloud-native demo application built with Spring Boot 3.5.6 and Java 25.
 ## Prerequisites
 
 ### For Local Development
-- Java 25 or later
+- Java 21 or later
 - Maven 3.8+ (or use included Maven Wrapper)
 
 ### For Docker Build
@@ -276,7 +276,7 @@ spring-boot-demo/
 
 ## Technology Stack
 - **Framework**: Spring Boot 3.5.6
-- **Language**: Java 25
+- **Language**: Java 21
 - **Build Tool**: Maven
 - **Template Engine**: Thymeleaf
 - **Containerization**: Paketo Buildpacks

@@ -1,6 +1,6 @@
 # Spring Boot DB Demo Application
 
-A cloud-native demo application with PostgreSQL database integration, built with Spring Boot 3.5.7, Spring Data JPA, and Java 25.
+A cloud-native demo application with PostgreSQL database integration, built with Spring Boot 3.5.7, Spring Data JPA, and Java 21.
 
 ## Features
 - Web interface showing tech stack information
@@ -15,7 +15,7 @@ A cloud-native demo application with PostgreSQL database integration, built with
 ## Prerequisites
 
 ### For Local Development
-- Java 25 or later
+- Java 21 or later
 - Maven 3.8+ (or use included Maven Wrapper)
 - Docker and Docker Compose (for database)
 
@@ -237,7 +237,7 @@ In Cloud Foundry, the application doesn't hardcode database credentials. Instead
 ## Technology Stack
 - **Framework**: Spring Boot 3.5.7
 - **ORM**: Spring Data JPA / Hibernate
-- **Language**: Java 25
+- **Language**: Java 21
 - **Build Tool**: Maven
 - **Database**: PostgreSQL 17
 - **JDBC Driver**: PostgreSQL JDBC Driver
