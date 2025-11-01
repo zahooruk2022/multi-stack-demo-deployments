@@ -7,7 +7,7 @@ This repository contains demo applications built with different technology stack
 The goal of this demo is to:
 - **Compare Tech Stacks**: See how the same application is implemented in Spring Boot (Java), .NET Core, and Node.js + React
 - **Cloud Native Patterns**: Demonstrate containerization, external configuration, stateless and stateful designs
-- **Database Integration**: Show cloud-native database patterns with PostgreSQL
+- **Database Integration**: Show cloud-native database patterns with PostgreSQL and MySQL
 - **Deployment Flexibility**: Show multiple deployment options (local, Docker, Cloud Foundry)
 - **Blue/Green Deployments**: Visualize deployment strategies with version and color coding
 - **Multi-Instance Awareness**: Use UUIDs to identify different instances in load-balanced scenarios
@@ -88,11 +88,12 @@ Applications with PostgreSQL database integration demonstrating cloud-native dat
 ![API Pets Response](assets/api-pets.png)
 
 #### Database Integration
-- **PostgreSQL 17**: Relational database with automatic schema creation
+- **PostgreSQL 17 or MySQL 8**: Dual database support with automatic detection
 - **Sample Data**: 8 pre-populated pet entries
 - **Auto-initialization**: Creates table and data on first run
 - **Docker Compose**: Includes PostgreSQL and pgAdmin 4 for local development
-- **Cloud Foundry**: Uses service binding via VCAP_SERVICES (my-demo-db)
+- **Cloud Foundry**: Auto-detects MySQL or PostgreSQL via VCAP_SERVICES (my-demo-db)
+- **Flexible Deployment**: Choose between PostgreSQL or MySQL when deploying to Cloud Foundry
 
 ## Deployment Options
 
@@ -151,15 +152,28 @@ cf push
 ```
 
 #### DB-Demo (with Database Service)
+
+**Option 1: PostgreSQL (default)**
 ```bash
 cd db-demo/<app-name>
-# Create database service if it doesn't exist
+# Create PostgreSQL service if it doesn't exist
 ./create-db-service.sh
+# or explicitly:
+./create-db-service.sh postgres
 # Deploy application
 cf push
 ```
 
-The db-demo applications automatically bind to the `my-demo-db` PostgreSQL service in Cloud Foundry.
+**Option 2: MySQL**
+```bash
+cd db-demo/<app-name>
+# Create MySQL service if it doesn't exist
+./create-db-service.sh mysql
+# Deploy application
+cf push
+```
+
+The db-demo applications automatically detect and bind to either MySQL or PostgreSQL service (`my-demo-db`) in Cloud Foundry via VCAP_SERVICES. The application will configure itself accordingly based on the detected database type.
 
 ## Configuration
 Each application uses its native configuration format to set:
@@ -200,6 +214,7 @@ All applications provide health check endpoints for monitoring and orchestration
 ### DB-Demo Patterns (Additional)
 - ✅ **External Service Dependency**: Database as a separate, managed service
 - ✅ **Service Binding**: Cloud Foundry VCAP_SERVICES for database credentials
+- ✅ **Multi-Database Support**: Automatic detection and configuration for MySQL or PostgreSQL
 - ✅ **Loose Coupling**: Application doesn't manage database lifecycle
 - ✅ **Environment-Based Configuration**: Database connection from environment variables
 - ✅ **Service Discovery**: Platform provides database location and credentials

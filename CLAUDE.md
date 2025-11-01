@@ -220,14 +220,15 @@ This ensures version consistency between local development and Docker Compose de
 # DB-Demo Application
 
 ## Overview
-The **db-demo** application extends the simple-demo by adding PostgreSQL database integration to demonstrate cloud-native patterns for stateful services and external dependencies.
+The **db-demo** application extends the simple-demo by adding database integration (PostgreSQL or MySQL) to demonstrate cloud-native patterns for stateful services and external dependencies. The applications automatically detect and configure themselves based on the database type provided via VCAP_SERVICES in Cloud Foundry.
 
 ## Database Features
 
-### PostgreSQL 17 Integration
-- **Database**: PostgreSQL 17
+### Database Integration (PostgreSQL 17 or MySQL 8)
+- **Databases Supported**: PostgreSQL 17 or MySQL 8
+- **Auto-Detection**: Application detects database type from VCAP_SERVICES
 - **Table**: `pets` with 8 dummy entries
-- **Schema**:
+- **Schema** (PostgreSQL):
   ```sql
   CREATE TABLE IF NOT EXISTS pets (
       id SERIAL PRIMARY KEY,
@@ -235,6 +236,17 @@ The **db-demo** application extends the simple-demo by adding PostgreSQL databas
       gender VARCHAR(10) NOT NULL,
       name VARCHAR(50) NOT NULL,
       age INTEGER NOT NULL,
+      description TEXT
+  );
+  ```
+- **Schema** (MySQL):
+  ```sql
+  CREATE TABLE IF NOT EXISTS pets (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      race VARCHAR(50) NOT NULL,
+      gender VARCHAR(10) NOT NULL,
+      name VARCHAR(50) NOT NULL,
+      age INT NOT NULL,
       description TEXT
   );
   ```
@@ -311,8 +323,9 @@ Cloud Foundry uses **service binding** to connect applications to databases, fol
 
 ### Database Service: `my-demo-db`
 - **Service Name**: `my-demo-db`
-- **Service Type**: `postgres` (or platform-specific PostgreSQL service)
+- **Service Type**: `postgres` or `mysql` (developer's choice)
 - **Plan**: `small` (configurable based on platform)
+- **Flexibility**: Application auto-detects and configures for either database type
 
 ### Manifest Configuration
 Each manifest includes service binding:
@@ -322,27 +335,45 @@ services:
 ```
 
 ### Automatic Service Creation
-The `create-db-service.sh` script:
-1. Checks if `my-demo-db` service exists using `cf service`
-2. If not found, creates the service: `cf create-service postgres small my-demo-db`
-3. Waits for service to be ready
-4. Reports status
+The `create-db-service.sh` script supports both PostgreSQL and MySQL:
+1. Accepts optional parameter: `postgres` (default) or `mysql`
+2. Checks if `my-demo-db` service exists using `cf service`
+3. If not found, creates the service with chosen database type
+4. Waits for service to be ready
+5. Reports status
 
-Example:
+Usage:
+```bash
+# Create PostgreSQL service (default)
+./create-db-service.sh
+# or explicitly:
+./create-db-service.sh postgres
+
+# Create MySQL service
+./create-db-service.sh mysql
+```
+
+Example script:
 ```bash
 #!/bin/bash
-if cf service my-demo-db > /dev/null 2>&1; then
-    echo "Service my-demo-db already exists"
+SERVICE_NAME="my-demo-db"
+DB_TYPE="${1:-postgres}"  # Default to postgres
+SERVICE_PLAN="small"
+
+if cf service "$SERVICE_NAME" > /dev/null 2>&1; then
+    echo "✓ Service '$SERVICE_NAME' already exists"
 else
-    echo "Creating my-demo-db service..."
-    cf create-service postgres small my-demo-db
+    echo "Creating $DB_TYPE service..."
+    cf create-service "$DB_TYPE" "$SERVICE_PLAN" "$SERVICE_NAME"
     echo "Waiting for service to be ready..."
     # Wait and check
 fi
 ```
 
 ### VCAP_SERVICES Pattern
-Applications read database credentials from `VCAP_SERVICES`:
+Applications read database credentials from `VCAP_SERVICES` and auto-detect the database type:
+
+**PostgreSQL Example:**
 ```json
 {
   "postgres": [{
@@ -359,20 +390,39 @@ Applications read database credentials from `VCAP_SERVICES`:
 }
 ```
 
-Each framework has its own way to parse VCAP_SERVICES:
-- **Spring Boot**: Spring Cloud Connectors or manual parsing
-- **.NET Core**: Environment variable parsing
-- **Node.js**: `cfenv` package or manual parsing
+**MySQL Example:**
+```json
+{
+  "mysql": [{
+    "name": "my-demo-db",
+    "credentials": {
+      "uri": "mysql://user:pass@host:3306/dbname",
+      "username": "user",
+      "password": "pass",
+      "host": "hostname",
+      "port": 3306,
+      "database": "dbname"
+    }
+  }]
+}
+```
+
+Each framework detects and configures the appropriate database driver:
+- **Spring Boot**: Auto-detects from JDBC URL, uses appropriate driver (PostgreSQL or MySQL)
+- **.NET Core**: Checks for `mysql` or `postgres` key, configures EF Core provider (UseMySql or UseNpgsql)
+- **Node.js**: Detects database type, uses appropriate client library (pg or mysql2)
 
 ## Cloud Native Database Patterns Demonstrated
 
 1. **External Service Dependency**: Database is a separate, managed service
-2. **Environment-Based Configuration**: Connection info from environment, not code
-3. **Service Discovery**: Applications discover database via platform (VCAP_SERVICES)
-4. **Portability**: Same code runs locally (Docker) and in cloud (CF service binding)
-5. **Database Initialization**: Automatic schema creation on startup
-6. **Connection Pooling**: Proper connection management for cloud environments
-7. **Resilience**: Graceful handling of database connectivity issues
+2. **Multi-Database Support**: Single codebase supports both PostgreSQL and MySQL
+3. **Auto-Detection**: Application automatically detects and configures for bound database type
+4. **Environment-Based Configuration**: Connection info from environment, not code
+5. **Service Discovery**: Applications discover database via platform (VCAP_SERVICES)
+6. **Portability**: Same code runs locally (Docker) and in cloud (CF service binding)
+7. **Database Initialization**: Automatic schema creation on startup
+8. **Connection Pooling**: Proper connection management for cloud environments
+9. **Resilience**: Graceful handling of database connectivity issues
 
 ## API Endpoints
 
@@ -404,22 +454,33 @@ Each framework has its own way to parse VCAP_SERVICES:
 
 ### Spring Boot
 - **ORM**: Spring Data JPA with Hibernate
-- **Driver**: PostgreSQL JDBC driver
+- **Drivers**: PostgreSQL JDBC driver + MySQL Connector/J
+- **Auto-Detection**: Spring Boot auto-detects database from JDBC URL
 - **Connection**: DataSource auto-configuration from VCAP_SERVICES
+- **Dependencies**:
+  - `org.postgresql:postgresql` (PostgreSQL)
+  - `com.mysql:mysql-connector-j` (MySQL)
 
 ### .NET Core
 - **ORM**: Entity Framework Core
-- **Driver**: Npgsql (PostgreSQL .NET driver)
+- **Drivers**:
+  - Npgsql (PostgreSQL)
+  - Pomelo.EntityFrameworkCore.MySql (MySQL)
+- **Auto-Detection**: Detects `mysql` or `postgres` from VCAP_SERVICES
+- **Provider Selection**: Dynamically uses `UseMySql()` or `UseNpgsql()`
 - **Connection**: DbContext configuration with priority order:
-  1. VCAP_SERVICES (Cloud Foundry)
+  1. VCAP_SERVICES (Cloud Foundry) - detects MySQL or PostgreSQL
   2. DATABASE_URL environment variable (Docker Compose)
   3. appsettings.json ConnectionStrings (local development)
-  4. Hardcoded fallback
+  4. Hardcoded fallback (PostgreSQL)
 
 ### Node.js
-- **Client**: `pg` (node-postgres)
-- **ORM** (optional): Sequelize or raw SQL
-- **Connection**: Connection pool from environment variables
+- **Clients**:
+  - `pg` (node-postgres) for PostgreSQL
+  - `mysql2` for MySQL
+- **Auto-Detection**: Detects database type from VCAP_SERVICES
+- **Connection**: Connection pool with appropriate library
+- **SQL Syntax**: Handles differences (e.g., `SERIAL` vs `AUTO_INCREMENT`, `$1` vs `?`)
 
 ## Future Enhancements
 - Kubernetes manifests with PostgreSQL StatefulSet
