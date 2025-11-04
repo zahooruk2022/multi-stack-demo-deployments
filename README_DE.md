@@ -34,9 +34,9 @@ Grundlegende zustandslose Anwendungen, die fundamentale Cloud-native Muster prä
 - **Sprache**: C#
 - **Port**: 8081 (konfigurierbar über PORT env var)
 
-#### 3. Node.js + React Demo (`simple-demo/nodejs-demo`)
+#### 3. Node.js Demo (`simple-demo/nodejs-demo`)
 - **Backend**: Express.js
-- **Frontend**: React
+- **Frontend**: HTML
 - **Port**: 8082 (konfigurierbar über PORT env var)
 - **Offline Deployment**: Unterstützt Cloud Foundry Offline/Air-Gapped Deployments über `npm-packages-offline-cache`
 
