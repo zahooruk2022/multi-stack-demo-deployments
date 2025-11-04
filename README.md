@@ -1,5 +1,9 @@
 # Multi-Stack Demo Applications
 
+**🌐 Language / Sprache:** **English** | [Deutsch](README_DE.md)
+
+---
+
 ## Overview
 This repository contains demo applications built with different technology stacks to showcase cloud-native development patterns and deployment strategies. The project includes two types of demos, each implemented in three different technology stacks (Spring Boot/Java, .NET Core/C#, Node.js).
 
@@ -312,7 +316,8 @@ All applications provide health check endpoints for monitoring and orchestration
 ## Project Structure
 ```
 demo/
-├── README.md (this file)
+├── README.md (this file - English)
+├── README_DE.md (this file - German)
 ├── CLAUDE.md (planning document)
 ├── LICENSE (MIT License)
 ├── .gitignore
