@@ -16,7 +16,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     /**
      * Find messages within the last N hours
      */
-    @Query("SELECT m FROM ChatMessage m WHERE m.timestamp >= :since ORDER BY m.timestamp ASC")
+    @Query("SELECT m FROM ChatMessage m WHERE m.timestamp > :since ORDER BY m.timestamp ASC")
     List<ChatMessage> findMessagesSince(@Param("since") LocalDateTime since);
 
     /**
